@@ -17,3 +17,9 @@ variable "subnet_prefixes" {
   description = "Map of subnet names to CIDR prefixes"
   type        = map(string)
 }
+
+variable "tags" {
+  description = "Resource tags to apply to networking resources"
+  type        = map(string)
+  default     = {}
+}

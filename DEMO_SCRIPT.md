@@ -497,6 +497,9 @@ Also update README.md with a "CI/CD" section explaining:
 ```
 Using Work IQ: summarize what was decided in my most recent meeting
 about the infrastructure migration project.
+
+Summarize what demo topics were decided for Github Copilot  in the last Tuesday's meeting with Mayer Brown
+
 Return 5 bullets.
 ```
 
