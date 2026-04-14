@@ -27,3 +27,8 @@ output "subnet_ids" {
   description = "Map of subnet names to IDs"
   value       = module.networking.subnet_ids
 }
+
+output "tags" {
+  description = "Resolved tags applied to all resources"
+  value       = local.tags
+}
