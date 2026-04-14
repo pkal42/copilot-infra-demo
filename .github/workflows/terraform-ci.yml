@@ -24,7 +24,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.7.x
+          terraform_version: "1.7.x"
 
       - name: Terraform fmt check
         run: terraform fmt -check -recursive
@@ -67,7 +67,7 @@ jobs:
 
             </details>
 
-            _Workflow: \`${context.workflow}\` • Commit: \`${context.sha}\`_`;
+            _Workflow: \`${context.workflow}\` • Commit: \`${{ github.sha }}\`_`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
