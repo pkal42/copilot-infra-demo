@@ -12,3 +12,9 @@ subnet_prefixes = {
 
 enable_diagnostics = true
 log_retention_days = 30
+
+tags = {
+  environment = "dev"
+  owner       = "platform-team"
+  cost_center = "CC-1234"
+}
