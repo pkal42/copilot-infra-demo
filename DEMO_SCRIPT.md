@@ -187,51 +187,157 @@ Make it production-ready with parameters for environment and backend config.
 
 ---
 
-## 5) Demo Part C — Delegation: CLI → Cloud Agent → PR (12–15 minutes)
+## 5) Demo Part C — `/delegate`, `/agent`, and Coding Agent (15–18 minutes)
 
-**Objective:** Show "team productivity" — offload work and get a PR back.
+**Objective:** Show three ways to offload work — from a quick inline agent call, to delegation, to fully async PR automation.
 
-### C1. Frame Delegation (30–45 seconds)
+### C1. Frame the Three Modes (1 minute)
 
 **Say:**
 
-> "When the task is larger and should land as a PR anyway, you can **delegate** from the CLI. `/delegate` hands off the task to the cloud agent, which opens a draft PR and works in the background."
+> "We've seen the **inner loop** with Agent Mode in VS Code. Now let's look at how Copilot CLI lets you offload work in three ways:
+>
+> 1. **`/agent`** — run a sub-agent right here in the terminal for a focused task  
+> 2. **`/delegate`** — hand off a larger task to the cloud agent, which opens a draft PR  
+> 3. **Coding agent from GitHub.com** — assign an issue and get a PR back"
 
-### C2. Run Delegation
+---
+
+### C2. `/agent` — Inline Sub-Agent in CLI (5 minutes)
+
+**Say:**
+
+> "`/agent` runs a sub-agent that can explore your codebase, make changes, and run commands — all within your CLI session. Think of it as 'Agent Mode but in the terminal.'"
+
+#### Demo Prompt 1 — Security audit
 
 In Copilot CLI:
 
 ```
-/delegate Add a GitHub Actions workflow that runs terraform fmt -check,
-terraform validate, and a terraform plan on pull requests.
-Also update README.md with the CI behavior and how to interpret
-plan artifacts.
+/agent Review all .tf files in this repo for security best practices.
+Check for: missing encryption settings, overly permissive network rules,
+missing diagnostic settings, and resources without lifecycle blocks.
+Create a file SECURITY_FINDINGS.md with your findings and recommendations.
+```
+
+**Talk track:**
+
+- *"Notice it's reading files, analyzing patterns, and producing a structured report."*
+- *"This is great for quick audits before a PR — you stay in the terminal."*
+
+#### Demo Prompt 2 — Generate a module
+
+```
+/agent Create a new Terraform module under modules/storage/ that provisions
+an Azure Storage Account with:
+- Blob versioning enabled
+- Soft delete for blobs (7 days) and containers (7 days)
+- Private endpoint support (variable toggle)
+- Required tags passed through
+- A README.md for the module
+Run terraform fmt on the new files when done.
+```
+
+**Talk track:**
+
+- *"The agent creates the entire module structure — main.tf, variables.tf, outputs.tf, README — in one go."*
+- *"It even runs `terraform fmt` to ensure formatting is correct."*
+
+---
+
+### C3. `/delegate` — Hand Off to Cloud Agent → PR (5 minutes)
+
+**Say:**
+
+> "When the task should land as a PR — maybe it's bigger, or you want a review gate — use `/delegate`. It hands off to the **cloud agent**, which works in an isolated environment and opens a draft PR."
+
+#### Demo Prompt — CI Workflow
+
+In Copilot CLI:
+
+```
+/delegate Add a GitHub Actions workflow (.github/workflows/terraform-ci.yml)
+that runs on pull requests and does:
+1) terraform fmt -check -recursive
+2) terraform init -backend=false
+3) terraform validate
+4) terraform plan -no-color (saved as an artifact)
+5) Post the plan output as a PR comment
+
+Also update README.md with a "CI/CD" section explaining:
+- What the workflow does
+- How to read the plan artifact
+- What to do if fmt or validate fails
 ```
 
 **Call out what's happening:**
 
-- *"It commits a checkpoint and creates a branch, then opens a draft PR and continues in the background."*
+- *"It commits a checkpoint, creates a branch, and opens a draft PR."*
+- *"The cloud agent works in the background — we can keep working."*
+- *"When it's done, we get a notification and can review the PR."*
 
-### C3. Explain Coding/Cloud Agent (1 minute)
+> **Tip:** We already have a reference workflow in `.github/workflows/terraform-ci.yml` — you can show this as the "expected result" if delegation takes too long live.
+
+#### Show the Reference Workflow
+
+If `/delegate` is still running or if you want to fast-forward:
+
+> "Here's what the workflow looks like — let me show you the one we already have as a reference."
+
+Open `.github/workflows/terraform-ci.yml` and walk through:
+
+- **Format check** → fails fast on formatting issues
+- **Init + Validate** → catches config errors before plan
+- **Plan + artifact upload** → plan is saved and posted to the PR as a comment
+- **PR comment with results table** → reviewers see status at a glance
+
+---
+
+### C4. Coding Agent from GitHub.com (3 minutes)
 
 **Say:**
 
-> "The cloud agent / coding agent is **asynchronous** — it works in an ephemeral environment powered by GitHub Actions, producing a PR for human review."
+> "The third mode is **fully async**: you assign a GitHub Issue to Copilot, and the coding agent picks it up. It works in an ephemeral environment, creates a branch, and opens a PR — like an async team member."
+
+#### Walk Through the Issue Template
+
+Show `.github/ISSUE_TEMPLATE/terraform-module-request.md`:
+
+> "We've set up an issue template for Terraform module requests. When someone files an issue like 'Create a monitoring module with alerts for Key Vault,' they can assign it to Copilot."
+
+#### Show the Setup Steps
+
+Show `.github/workflows/copilot-setup-steps.yml`:
+
+> "This `copilot-setup-steps.yml` workflow tells the coding agent how to set up its environment — install Terraform, run init. It's how you customize the agent's workspace."
+
+#### Scenario (talk-through or live)
+
+> "Imagine someone files an issue: *'Add a Terraform module for Azure Monitor diagnostic settings that auto-attaches to all resources.'*
 >
-> "This is a strong fit for **backlog items** and repetitive hygiene tasks."
+> They assign it to Copilot. The coding agent:
+> 1. Spins up an isolated environment  
+> 2. Reads the issue requirements  
+> 3. Creates the module, writes tests, runs fmt/validate  
+> 4. Opens a draft PR linked to the issue  
+>
+> The engineer reviews, requests changes, and Copilot iterates — all in the PR."
 
-**Customer-safe line:**
+---
 
-> "Agent mode is **synchronous** in VS Code, coding agent is **asynchronous** on GitHub.com; they complement each other."
+### C5. Close Part C (30 seconds)
 
-### C4. Show the PR (if available)
+**Summary:**
 
-Navigate to GitHub → show the draft PR → highlight:
+| Command / Mode | Where it runs | Best for |
+|---|---|---|
+| `/agent` | Your terminal (inline) | Quick audits, module generation, scripts |
+| `/delegate` | Cloud agent → draft PR | Larger tasks that need PR review |
+| Coding agent (issue) | GitHub.com → draft PR | Backlog items, team-wide requests |
 
-- The branch and commit message
-- The CI workflow file it created
-- The README updates
-- That it's a **draft** — human review required before merge
+**Say:**
+
+> "Three levels of delegation: **inline**, **PR-targeted**, and **fully async from an issue**. All produce reviewable, auditable output."
 
 ---
 
@@ -351,18 +457,49 @@ Create a PowerShell script deploy-infra.ps1 that:
 Make it production-ready with parameters for environment and backend config.
 ```
 
-### CLI — Delegate CI Workflow
+### CLI — /agent Security Audit
 ```
-/delegate Add a GitHub Actions workflow that runs terraform fmt -check,
-terraform validate, and a terraform plan on pull requests.
-Also update README.md with the CI behavior and how to interpret
-plan artifacts.
+/agent Review all .tf files in this repo for security best practices.
+Check for: missing encryption settings, overly permissive network rules,
+missing diagnostic settings, and resources without lifecycle blocks.
+Create a file SECURITY_FINDINGS.md with your findings and recommendations.
+```
+
+### CLI — /agent Module Generation
+```
+/agent Create a new Terraform module under modules/storage/ that provisions
+an Azure Storage Account with:
+- Blob versioning enabled
+- Soft delete for blobs (7 days) and containers (7 days)
+- Private endpoint support (variable toggle)
+- Required tags passed through
+- A README.md for the module
+Run terraform fmt on the new files when done.
+```
+
+### CLI — /delegate CI Workflow
+```
+/delegate Add a GitHub Actions workflow (.github/workflows/terraform-ci.yml)
+that runs on pull requests and does:
+1) terraform fmt -check -recursive
+2) terraform init -backend=false
+3) terraform validate
+4) terraform plan -no-color (saved as an artifact)
+5) Post the plan output as a PR comment
+
+Also update README.md with a "CI/CD" section explaining:
+- What the workflow does
+- How to read the plan artifact
+- What to do if fmt or validate fails
 ```
 
 ### Work IQ — Meeting Context
 ```
 Using Work IQ: summarize what was decided in my most recent meeting
 about the infrastructure migration project.
+
+Summarize what demo topics were decided for Github Copilot  in the last Tuesday's meeting with Mayer Brown
+
 Return 5 bullets.
 ```
 
@@ -372,27 +509,39 @@ Return 5 bullets.
 
 ```
 copilot-infra-demo/
-├── main.tf                  # Azure resources (RG, Key Vault, Storage, Log Analytics)
-├── variables.tf             # Input variables (NO tag validation yet)
-├── outputs.tf               # Basic outputs
-├── providers.tf             # AzureRM provider + backend
-├── terraform.tfvars         # Sample values
-├── plan.txt                 # Pre-recorded terraform plan output
-├── README.md                # Basic readme (will be enhanced)
+├── main.tf                           # Azure resources (no tags!)
+├── variables.tf                      # Inputs (no tag validation)
+├── outputs.tf                        # Basic outputs
+├── providers.tf                      # AzureRM provider + backend
+├── terraform.tfvars                  # Sample values
+├── plan.txt                          # Pre-recorded plan output for CLI
+├── README.md                         # Basic readme (enhanced during demo)
 ├── modules/
 │   └── networking/
-│       ├── main.tf          # VNet, subnets, NSGs
+│       ├── main.tf                   # VNet, subnets, NSGs
 │       ├── variables.tf
 │       └── outputs.tf
 └── .github/
-    └── agents/              # Placeholder for custom agents
+    ├── agents/
+    │   └── terraform-runbook.yml     # Custom agent for runbook generation
+    ├── ISSUE_TEMPLATE/
+    │   └── terraform-module-request.md  # Issue template for coding agent
+    └── workflows/
+        ├── terraform-ci.yml          # Reference CI workflow (show during demo)
+        └── copilot-setup-steps.yml   # Coding agent environment setup
 ```
 
 ### What's intentionally missing (for the demo to add):
-- ❌ No `tags` variable or tag enforcement
-- ❌ No `validation` blocks
-- ❌ No CI/CD workflow
-- ❌ No runbook or deployment scripts
-- ❌ No tagging section in README
+- ❌ No `tags` variable or tag enforcement → **Agent Mode adds this**
+- ❌ No `validation` blocks → **Agent Mode adds this**
+- ❌ No runbook or deployment scripts → **Copilot CLI generates these**
+- ❌ No security audit → **`/agent` produces this**
+- ❌ No storage module → **`/agent` creates this**
+
+### What's pre-staged (reference / fallback):
+- ✅ `terraform-ci.yml` — reference CI workflow (show if `/delegate` is slow)
+- ✅ `copilot-setup-steps.yml` — coding agent env setup (walk through)
+- ✅ Issue template — for coding agent demo scenario
+- ✅ Custom agent config — for runbook consistency mention
 
 This "before" state lets each demo section **visibly add value**.
