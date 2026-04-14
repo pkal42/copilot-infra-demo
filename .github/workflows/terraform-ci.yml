@@ -66,7 +66,7 @@ jobs:
             \`\`\`
 
             </details>
-            
+
             _Workflow: \`${context.workflow}\` • Commit: \`${context.sha}\`_`;
 
             github.rest.issues.createComment({
