@@ -6,10 +6,6 @@ name: "Terraform CI"
 on:
   pull_request:
     branches: [main, master]
-    paths:
-      - "**.tf"
-      - "**.tfvars"
-      - ".github/workflows/terraform-ci.yml"
 
 permissions:
   contents: read
@@ -17,6 +13,8 @@ permissions:
 
 env:
   TF_LOG: INFO
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
@@ -37,7 +35,7 @@ jobs:
 
       - name: Terraform Format Check
         id: fmt
-        run: terraform fmt -check -recursive -diff
+        run: terraform fmt -check -recursive
         continue-on-error: true
 
       - name: Terraform Init
