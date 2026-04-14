@@ -18,6 +18,28 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
+## CI/CD
+
+Pull requests run the `Terraform CI` GitHub Actions workflow. It executes:
+
+1. `terraform fmt -check -recursive`
+2. `terraform init -backend=false`
+3. `terraform validate`
+4. `terraform plan -no-color` and saves the output as a workflow artifact
+5. Posts the plan output back to the pull request as a comment
+
+To read the plan artifact:
+
+- Open the pull request checks for **Terraform CI**
+- Open the workflow run and download the **terraform-plan-output** artifact
+- Review `plan-output.txt` for the full plan output
+
+If `fmt` or `validate` fails:
+
+- Run `terraform fmt -recursive` locally to fix formatting
+- Re-run `terraform init -backend=false && terraform validate` to confirm config is valid
+- Commit the fixes and push to update the pull request checks
+
 ## Inputs
 
 | Variable | Description | Default |
