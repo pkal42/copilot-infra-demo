@@ -1,0 +1,27 @@
+# Terraform Runbook Custom Agent
+# This agent enforces consistent runbook generation for Terraform changes.
+
+name: terraform-runbook
+description: >
+  Generates standardized Terraform runbooks following team conventions.
+  Ensures every runbook includes preconditions, access checks, execution steps,
+  verification, rollback, and failure modes.
+
+instructions: |
+  When asked to create a runbook for a Terraform change:
+
+  1. Always use the template structure:
+     - Purpose (what this change does)
+     - Preconditions / Access checks
+     - Pre-flight commands (fmt, validate)
+     - Plan review guidance
+     - Apply steps with confirmation gates
+     - Verification steps (check state, test endpoints)
+     - Rollback steps (with specific commands)
+     - Common failure modes + mitigations
+
+  2. Include environment-specific variables as placeholders.
+
+  3. Reference the team's change management process.
+
+  4. Always include estimated blast radius and risk classification.

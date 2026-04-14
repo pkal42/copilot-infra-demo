@@ -1,0 +1,140 @@
+Terraform used the selected providers to generate the following execution plan.
+Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # azurerm_resource_group.main will be created
+  + resource "azurerm_resource_group" "main" {
+      + id       = (known after apply)
+      + location = "uksouth"
+      + name     = "rg-infra-demo"
+    }
+
+  # azurerm_key_vault.main will be created
+  + resource "azurerm_key_vault" "main" {
+      + id                          = (known after apply)
+      + location                    = "uksouth"
+      + name                        = "kv-infra-demo-dev"
+      + resource_group_name         = "rg-infra-demo"
+      + sku_name                    = "standard"
+      + tenant_id                   = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+      + enabled_for_disk_encryption = true
+      + purge_protection_enabled    = true
+      + soft_delete_retention_days  = 90
+    }
+
+  # azurerm_storage_account.main will be created
+  + resource "azurerm_storage_account" "main" {
+      + id                       = (known after apply)
+      + location                 = "uksouth"
+      + name                     = "stinfrademodev"
+      + resource_group_name      = "rg-infra-demo"
+      + account_tier             = "Standard"
+      + account_replication_type = "GRS"
+      + min_tls_version          = "TLS1_2"
+    }
+
+  # azurerm_log_analytics_workspace.main will be created
+  + resource "azurerm_log_analytics_workspace" "main" {
+      + id                  = (known after apply)
+      + location            = "uksouth"
+      + name                = "law-infra-demo-dev"
+      + resource_group_name = "rg-infra-demo"
+      + sku                 = "PerGB2018"
+      + retention_in_days   = 30
+    }
+
+  # module.networking.azurerm_virtual_network.main will be created
+  + resource "azurerm_virtual_network" "main" {
+      + id                  = (known after apply)
+      + address_space       = ["10.0.0.0/16"]
+      + location            = "uksouth"
+      + name                = "vnet-infra-demo"
+      + resource_group_name = "rg-infra-demo"
+    }
+
+  # module.networking.azurerm_subnet.subnets["app"] will be created
+  + resource "azurerm_subnet" "subnets" {
+      + id                  = (known after apply)
+      + name                = "snet-app"
+      + resource_group_name = "rg-infra-demo"
+      + address_prefixes    = ["10.0.1.0/24"]
+    }
+
+  # module.networking.azurerm_subnet.subnets["db"] will be created
+  + resource "azurerm_subnet" "subnets" {
+      + id                  = (known after apply)
+      + name                = "snet-db"
+      + resource_group_name = "rg-infra-demo"
+      + address_prefixes    = ["10.0.2.0/24"]
+    }
+
+  # module.networking.azurerm_subnet.subnets["mgmt"] will be created
+  + resource "azurerm_subnet" "subnets" {
+      + id                  = (known after apply)
+      + name                = "snet-mgmt"
+      + resource_group_name = "rg-infra-demo"
+      + address_prefixes    = ["10.0.3.0/24"]
+    }
+
+  # module.networking.azurerm_network_security_group.subnets["app"] will be created
+  + resource "azurerm_network_security_group" "subnets" {
+      + id                  = (known after apply)
+      + location            = "uksouth"
+      + name                = "nsg-app"
+      + resource_group_name = "rg-infra-demo"
+    }
+
+  # module.networking.azurerm_network_security_group.subnets["db"] will be created
+  + resource "azurerm_network_security_group" "subnets" {
+      + id                  = (known after apply)
+      + location            = "uksouth"
+      + name                = "nsg-db"
+      + resource_group_name = "rg-infra-demo"
+    }
+
+  # module.networking.azurerm_network_security_group.subnets["mgmt"] will be created
+  + resource "azurerm_network_security_group" "subnets" {
+      + id                  = (known after apply)
+      + location            = "uksouth"
+      + name                = "nsg-mgmt"
+      + resource_group_name = "rg-infra-demo"
+    }
+
+  # module.networking.azurerm_subnet_network_security_group_association.subnets["app"] will be created
+  + resource "azurerm_subnet_network_security_group_association" "subnets" {
+      + id                        = (known after apply)
+      + subnet_id                 = (known after apply)
+      + network_security_group_id = (known after apply)
+    }
+
+  # module.networking.azurerm_subnet_network_security_group_association.subnets["db"] will be created
+  + resource "azurerm_subnet_network_security_group_association" "subnets" {
+      + id                        = (known after apply)
+      + subnet_id                 = (known after apply)
+      + network_security_group_id = (known after apply)
+    }
+
+  # module.networking.azurerm_subnet_network_security_group_association.subnets["mgmt"] will be created
+  + resource "azurerm_subnet_network_security_group_association" "subnets" {
+      + id                        = (known after apply)
+      + subnet_id                 = (known after apply)
+      + network_security_group_id = (known after apply)
+    }
+
+Plan: 14 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + key_vault_id              = (known after apply)
+  + log_analytics_workspace_id = (known after apply)
+  + resource_group_name       = "rg-infra-demo"
+  + storage_account_name      = "stinfrademodev"
+  + subnet_ids                = (known after apply)
+  + vnet_id                   = (known after apply)
+
+─────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform
+can't guarantee that exactly these actions will be performed if
+"terraform apply" is subsequently run.
